@@ -24,21 +24,21 @@
 
 <div class="search">
     <div class="from">
-        <input type="text" bind:value={fromInput} placeholder="From..." on:input={() => updateSearch(false)}>
+        <input disabled={fromDisabled} type="text" bind:value={fromInput} placeholder="From..." on:input={() => updateSearch(false)}>
         <ul>
             {#if resultsFrom}
                 {#each Object.keys(resultsFrom) as item}
-                <li><button>{item}</button></li>
+                <li><button on:click={() => selectItem(false, item)}>{item}</button></li>
                 {/each}
             {/if}
         </ul>
     </div>
     <div class="to">
-        <input type="text" bind:value={toInput} placeholder="To..." on:input={() => updateSearch(true)}>
+        <input disabled={toDisabled} type="text" bind:value={toInput} placeholder="To..." on:input={() => updateSearch(true)}>
         <ul>
             {#if resultsTo}
                 {#each Object.keys(resultsTo) as item}
-                    <li><button>{item}</button></li>
+                    <li><button on:click={() => selectItem(true, item)}>{item}</button></li>
                 {/each}
             {/if}
         </ul>
@@ -52,6 +52,8 @@
     let resultsFrom: Record<string, string> = {};
     let toInput = "";
     let fromInput = "";
+    let toDisabled = false;
+    let fromDisabled = false;
     // TODO: set from and to using the buttons in the input
     let from = "";
     let to = "";
@@ -81,4 +83,13 @@
             })
         }
     }
+;
+    const selectItem = (to: boolean, item: string) => {
+        if (to === false) { // from
+            
+        }
+        else if (to === true) { // to
+
+        }
+    };
 </script>
