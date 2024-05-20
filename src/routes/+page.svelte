@@ -39,7 +39,7 @@
         <ul>
             {#if resultsFrom && fromResultsShown}
                 {#each Object.keys(resultsFrom) as item}
-                <li><button on:click|preventDefault={() => {selectItem(false, item)}} on:mousedown|preventDefault={() => {}}>{item}</button></li>
+                <li><button on:click={() => {selectItem(false, item); fromResultsShown = false; }} on:mousedown|preventDefault={() => {}}>{item}</button></li>
                 {/each}
             {/if}
         </ul>
@@ -49,21 +49,24 @@
         <ul>
             {#if resultsTo && toResultsShown}
                 {#each Object.keys(resultsTo) as item}
-                    <li><button on:click|preventDefault={() => selectItem(true, item)} on:mousedown|preventDefault={() => {}}>{item}</button></li>
+                    <li><button on:click={() => { selectItem(true, item); toResultsShown = false; }} on:mousedown|preventDefault={() => {}}>{item}</button></li>
                 {/each}
             {/if}
         </ul>
-        {#if sameErrorShown}
-            <span class="error" id="sameError">Error: articles must not be the same.</span>
+        {#if errorShown}
+            <span class="error" id="sameError">{errorContent}</span>
         {/if}
     </div>
-    <input disabled={submitDisabled} type="submit" value="Go" class="submitButton">
+    <input disabled={submitDisabled} type="submit" value="Go" class="submitButton" on:click={() => onSubmit()}>
 </form>
+<main class="wikipedia">{@html articleContent}</main>
 
 <script lang="ts">
     // TODO now we have to make the wikipedia client+
     
     import { onMount } from 'svelte';
+    import { searchWikipedia, getContentOfPage } from '$lib/api';
+    import { sanitiseArticle } from '$lib/article';
 
     // inputs and list buttons
     let resultsTo: Record<string, string> = {};
@@ -72,34 +75,47 @@
     let fromResultsShown = false;
     let toInput = "";
     let fromInput = "";
+    let articleContent = "";
 
     // submit button
     let submitDisabled = false;
 
-    // errors shown?
-    let sameErrorShown = false;
+    // errors
+    let errorShown = false;
+    let errorContent = "";
 
-    const searchWikipedia = async (q: string) => {
-        const response = await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&format=json&search=${q}&origin=*`);
-        let resJson = await response.json();
-        return resJson;
-    };
+    // utility functions
+    const toggleSameError = (error: boolean) => {
+        if (error) {
+            errorContent = "Error: both articles must not be the same."
+            errorShown = true;
+        }
+        else if (!error) {
+            errorShown = false;
+        }
+        else { // error = undefined, toggle the error
+            errorContent = "Error: both articles must not be the same.";
+            errorShown = !errorShown;
+        }
+    }
+    // end utility functions
 
+    // START searching for a page
+    // make sure that from and to are correct
     const validateInputs = () => {
         if (toInput === "" || fromInput === "") {
             submitDisabled = true; // very subtle
         }
         else if (toInput.toLowerCase() === fromInput.toLowerCase()) {
             submitDisabled = true;
-            sameErrorShown = true;
+            toggleSameError(true)
             console.warn("Both input fields are the same, warning")
         }
         else {
             submitDisabled = false;
-            sameErrorShown = false;
+            toggleSameError(false)
         }
     }
-
     const updateSearch = (to: boolean) => {
         if (to === false) { // from
             searchWikipedia(fromInput).then(data => {
@@ -150,4 +166,42 @@
     onMount(() => {
         validateInputs();
     })
+    // END searching for a page
+
+    // START actual wikipedia
+    const onSubmit = () => {
+        // validate both pages and store content of JSON returned if possible
+        articleContent = "<b>Loading...</b>";
+        getContentOfPage(toInput).then(data => {
+            errorShown = false;
+        }).catch((err) => {
+            if (err instanceof ReferenceError) { // wikipedia page not found
+                errorShown = true;
+                errorContent = `Wikipedia page "${toInput} not found. Check spelling."`;
+            }
+            else {
+                errorShown = true;
+                errorContent = `Wikipedia page "${toInput}" not found. Check your spelling.`;
+            }
+        });
+        getContentOfPage(fromInput).then(pageContent => {
+            // look in here, actual stuff happens!
+            errorShown = false;
+            console.log(pageContent);
+            articleContent = sanitiseArticle(pageContent["parse"]["text"]);
+        }).catch((err) => {
+            if (err instanceof ReferenceError) { // wikipedia page not found
+                errorShown = true;
+                errorContent = `Wikipedia page "${fromInput} not found. Check spelling."`;
+            }
+            else {
+                errorShown = true;
+                errorContent = `Wikipedia page "${fromInput}" not found. Check your spelling.`;
+            }
+        });
+
+        // yay! the articles actually exist!
+        
+    }
+    // END actual wikipedia
 </script>
