@@ -1,5 +1,6 @@
 import { error, json } from '@sveltejs/kit';
 import sanitiseHtml from 'sanitize-html';
+import { JSDOM } from "jsdom";
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ url }) {
@@ -28,16 +29,15 @@ export async function GET({ url }) {
     let article = resJson["parse"]["text"];
 
     sanitiseHtml(article);
-    const parser = new DOMParser();
-    const htmlDoc = parser.parseFromString(article, 'text/html');
-    htmlDoc.querySelectorAll('.mw-editsection').forEach(e => e.remove()); // get rid of edit buttons
+    const htmlDoc = new JSDOM(article);
+    htmlDoc.window.querySelectorAll('.mw-editsection').forEach(e => e.remove()); // get rid of edit buttons
     // return htmlDoc.body.innerHTML
     // remove external links
-    htmlDoc.querySelector<HTMLElement>(".external")!.style.color = "#f00";
-    htmlDoc.querySelector(".external")?.setAttribute("href", "");
+    htmlDoc.window.querySelector(".external")!.style.color = "#f00";
+    htmlDoc.window.querySelector(".external")?.setAttribute("href", "");
     let data = {
         status: 200,
-        body: htmlDoc.body.innerHTML
+        body: htmlDoc.window.body.innerHTML
     }
 
 
@@ -46,5 +46,5 @@ export async function GET({ url }) {
 
 /** @type {import('./$types').RequestHandler} */
 export async function fallback({ request }) {
-    error(405, `Method not allowed. Use a GET request instead.`);
+    error(405, "Method not allowed. Use a GET request instead.");
 }

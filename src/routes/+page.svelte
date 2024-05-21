@@ -176,7 +176,7 @@
         }).catch((err) => {
             if (err instanceof ReferenceError) { // wikipedia page not found
                 errorShown = true;
-                errorContent = `Wikipedia page "${toInput} not found. Check spelling."`;
+                errorContent = `Wikipedia page "${toInput} not found. Check your spelling."`;
             }
             else {
                 errorShown = true;
@@ -191,7 +191,7 @@
         }).catch((err) => {
             if (err instanceof ReferenceError) { // wikipedia page not found
                 errorShown = true;
-                errorContent = `Wikipedia page "${fromInput} not found. Check spelling."`;
+                errorContent = `Wikipedia page "${fromInput} not found. Check your spelling."`;
             }
             else {
                 errorShown = true;
