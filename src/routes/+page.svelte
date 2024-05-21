@@ -66,7 +66,6 @@
     
     import { onMount } from 'svelte';
     import { searchWikipedia, getContentOfPage } from '$lib/api';
-    import { sanitiseArticle } from '$lib/article';
 
     // inputs and list buttons
     let resultsTo: Record<string, string> = {};
@@ -188,7 +187,7 @@
             // look in here, actual stuff happens!
             errorShown = false;
             console.log(pageContent);
-            articleContent = sanitiseArticle(pageContent["parse"]["text"]);
+            articleContent = pageContent["body"];
         }).catch((err) => {
             if (err instanceof ReferenceError) { // wikipedia page not found
                 errorShown = true;

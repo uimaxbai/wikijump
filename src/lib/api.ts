@@ -7,15 +7,13 @@ export const searchWikipedia = async (q: string) => {
 
 // get content of page or see if page exists
 export const getContentOfPage = async (page: string) => {
-    const response = await fetch(`https://en.wikipedia.org/w/api.php?action=parse&page=${page}&prop=text&formatversion=2&origin=*&format=json`);
+    const response = await fetch(`/api/getArticle?n=${page}`);
     let resJson = await response.json();
-    if (resJson.error === undefined) {
-        return resJson;
+    if (response.status === 404) {
+        throw new ReferenceError(`Page ${page} not found on Wikipedia.`)
     }
-    else if (resJson.error.code === "missingtitle") {
-        throw new ReferenceError(`${page} does not exist on Wikipedia.`)
+    else if (response.status !== 200) {
+        throw new Error(`An unknown error occured. JSON: ${JSON.stringify(resJson)}`);
     }
-    else {
-        throw new Error(`Unknown error occured. JSON: ${JSON.stringify(resJson)}`);
-    }
+    return resJson;
 };
