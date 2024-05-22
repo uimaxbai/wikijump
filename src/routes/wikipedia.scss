@@ -1,0 +1,77 @@
+main.wikipedia {
+    margin: 1em;
+    border: 1px solid lightgray;
+    border-radius: 1em;
+    padding: 1em;
+    line-height: 1.1em;
+    // The infobox
+    :global(.infobox) {
+        float: right;
+        border: 1px solid lightgray;
+        padding: 1em;
+        margin-left: 1em;
+        border-radius: 1em;
+        width: 22em;
+        clear: right;
+        font-size: .88em;
+        text-align: center;
+    }
+    :global(.infobox .infobox-above) {
+        font-size: 1.1em;
+    }
+    :global(.infobox-label), :global(.infobox-data) {
+        text-align: left;
+    }
+    // Normal image boxes
+    :global(.mw-halign-left) {
+        float: left;
+        clear: left;
+    }
+    :global(figure[typeof~='mw:File/Thumb']) {
+        display: table;
+        text-align: center;
+        border: 1px solid lightgray;
+        padding: .5em;
+        float: right;
+        clear: right;
+        border-bottom: 0;
+        margin: 1em;
+    }
+    :global(figure[typeof~='mw:File/Thumb'] figcaption) {
+        text-align: left;
+        font-size: .88em;
+        display: table-caption;
+        caption-side: bottom;
+        word-break: break-word;
+        border: 1px solid lightgray;
+        padding: .5em;
+        border-top: 0;
+        padding-top: 0;
+    }
+    // Image rows
+    :global(div.thumb) {
+        width: auto;
+        border: 1px solid lightgray;
+        padding: .5em;
+        margin: 1em;
+    }
+    :global(.tright) {
+        float: right;
+        clear: right;
+    }
+    :global(.tmulti .trow) {
+        display: flex;
+        flex-direction: row;
+        clear: left;
+        flex-wrap: wrap;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    // Text
+    :global(.mw-headline) {
+        border-bottom: 1px solid lightgray;
+        padding-bottom: .3em;
+        width: 100%;
+        display: block;
+    }
+}

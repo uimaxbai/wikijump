@@ -1,4 +1,5 @@
 <style lang="scss">
+    @import './wikipedia.scss';
     $font: 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
     :global(html, body, body .mainDiv) {
         width: 100%;

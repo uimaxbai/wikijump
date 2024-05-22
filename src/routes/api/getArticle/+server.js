@@ -32,7 +32,6 @@ export async function GET({ url }) {
     catch (e) {
         // idk why this works, but maybe it's because resJson.error doesn't exist?????
     }
-    console.log(1);
     let article = resJson["parse"]["text"];
 
     sanitiseHtml(article);
