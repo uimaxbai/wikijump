@@ -68,10 +68,10 @@ main.wikipedia {
         box-sizing: border-box;
     }
     // Text
-    :global(.mw-headline) {
+    :global(.mw-parser-output h2) {
         border-bottom: 1px solid lightgray;
         padding-bottom: .3em;
-        width: 100%;
         display: block;
+        overflow: hidden;
     }
 }

@@ -39,8 +39,19 @@ export async function GET({ url }) {
     htmlDoc.window.document.querySelectorAll('.mw-editsection').forEach(e => e.remove()); // get rid of edit buttons
     // return htmlDoc.body.innerHTML
     // remove external links
-    htmlDoc.window.document.querySelector(".external").style.color = "#f00";
-    htmlDoc.window.document.querySelector(".external")?.setAttribute("href", "");
+    htmlDoc.window.document.querySelectorAll(".external").forEach(e => { e.style.color = "#f00" });
+    htmlDoc.window.document.querySelectorAll(".external").forEach(e => e?.setAttribute("href", ""));
+    /* let wikiJs = htmlDoc.window.document.createElement("script");
+    wikiJs.text = `
+    document.querySelectorAll(".hidden-begin").forEach(e => {
+        let hiddenButtonDiv = document.createElement("div");
+        hiddenButtonDiv.innerHTML = \`
+        [<button tabindex="0" onclick="">hide</button>]
+        \`;
+        e.prepend()
+    })
+    `;
+    htmlDoc.window.document.body.appendChild(wikiJs); */
     
     let data = {
         status: 200,
