@@ -1,6 +1,5 @@
 import { error, json } from '@sveltejs/kit';
-import sanitiseHtml from 'sanitize-html';
-import { JSDOM } from "jsdom";
+// import DOMPurify from 'isomorphic-dompurify';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ url }) {
@@ -32,15 +31,14 @@ export async function GET({ url }) {
     catch (e) {
         // idk why this works, but maybe it's because resJson.error doesn't exist?????
     }
+    const start = new Date().getTime();
     let article = resJson["parse"]["text"];
-
-    sanitiseHtml(article);
-    const htmlDoc = new JSDOM(article);
-    htmlDoc.window.document.querySelectorAll('.mw-editsection').forEach(e => e.remove()); // get rid of edit buttons
+    // let article = DOMPurify.sanitize(resJson["parse"]["text"]);
+    console.log(`Time took: ${((new Date().getTime()) - start) / 1000}s`);
     // return htmlDoc.body.innerHTML
     // remove external links
-    htmlDoc.window.document.querySelectorAll(".external").forEach(e => { e.style.color = "#f00" });
-    htmlDoc.window.document.querySelectorAll(".external").forEach(e => e?.setAttribute("href", ""));
+    // htmlDoc.window.document.querySelectorAll(".external").forEach(e => { e.style.color = "#f00" });
+    // htmlDoc.window.document.querySelectorAll(".external").forEach(e => e?.setAttribute("href", ""));
     /* let wikiJs = htmlDoc.window.document.createElement("script");
     wikiJs.text = `
     document.querySelectorAll(".hidden-begin").forEach(e => {
@@ -55,7 +53,8 @@ export async function GET({ url }) {
     
     let data = {
         status: 200,
-        body: htmlDoc.window.document.body.innerHTML
+        body: article,
+        title: resJson["parse"]["title"]
     }
 
 

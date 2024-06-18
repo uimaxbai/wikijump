@@ -8,6 +8,11 @@
         margin: 0;
         font-family: $font;
     }
+    :global(body) {
+        width: calc(100% - 2em);
+        height: calc(100% - 2em);
+        margin: 1em;
+    }
     .search {
         display: flex;
         gap: 1em;
@@ -60,13 +65,21 @@
     </div>
     <input disabled={submitDisabled} type="submit" value="Go" class="submitButton" on:click={() => onSubmit()}>
 </form>
-<main class="wikipedia">{@html articleContent}</main>
+<main class="wikipedia" style="display: {wikiDisplay ? 'flex' : 'none'}">
+    <div class="left">
+        {@html tableOfContents}
+    </div>
+    <div class="right">
+        <h1 style="margin-top: 0; border-bottom: 1px solid lightgray; padding-bottom: .5em; margin-bottom: .5em;">{title}</h1>
+        {@html articleContent}
+    </div>
+</main>
 
 <script lang="ts">
     // TODO now we have to make the wikipedia client+
     
     import { onMount } from 'svelte';
-    import { searchWikipedia, getContentOfPage } from '$lib/api';
+    import { searchWikipedia, getContentOfPage, getTableOfContents } from '$lib/api';
 
     // inputs and list buttons
     let resultsTo: Record<string, string> = {};
@@ -75,7 +88,12 @@
     let fromResultsShown = false;
     let toInput = "";
     let fromInput = "";
+    let title = "";
+    let wikiDisplay = false;
+
+    // things to do with the actual article
     let articleContent = "";
+    let tableOfContents = "";
 
     // submit button
     let submitDisabled = false;
@@ -163,15 +181,30 @@
             toInput = item;
         }
     };
-    onMount(() => {
-        validateInputs();
-    })
     // END searching for a page
 
     // START actual wikipedia
+    // make collapsible things collapsible, etc
+    let currentId = 0;
+    const javascriptify = () => {
+        onMount(() => { // do this in dom
+            document.querySelectorAll("table.collapsible").forEach(el => {
+                console.log(el);
+                el = el.querySelector("tbody");
+                el?.classList.add(`custom-collapsible-num-${currentId}`);
+                let button = document.createElement("button");
+                button.classList.add(`custom-collapsible-num-${currentId}`);
+                let buttonSpan = button.appendChild(document.createElement("span"));
+                buttonSpan.classList.add("custom-collapsible-toggle-span");
+                buttonSpan.innerHTML = "show";
+                el.querySelector("tr")?.appendChild(button);
+            })
+        })
+        currentId += 1;
+    }
     const onSubmit = () => {
         // validate both pages and store content of JSON returned if possible
-        articleContent = "<b>Loading...</b>";
+        // articleContent = "<b>Loading...</b>";
         getContentOfPage(toInput).then(data => {
             errorShown = false;
         }).catch((err) => {
@@ -187,8 +220,14 @@
         getContentOfPage(fromInput).then(pageContent => {
             // look in here, actual stuff happens!
             errorShown = false;
-            console.log(pageContent);
+            // console.log(pageContent);
             articleContent = pageContent["body"];
+            title = pageContent["title"];
+            wikiDisplay = true; // display the wiki!
+            javascriptify();
+            getTableOfContents(fromInput).then(toc => {
+                
+            })
         }).catch((err) => {
             if (err instanceof ReferenceError) { // wikipedia page not found
                 errorShown = true;
@@ -204,4 +243,8 @@
         
     }
     // END actual wikipedia
+
+    onMount(() => {
+        validateInputs();
+    })
 </script>

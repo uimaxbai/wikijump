@@ -17,3 +17,15 @@ export const getContentOfPage = async (page: string) => {
     }
     return resJson;
 };
+
+export const getTableOfContents = async (page: string) => {
+    const response = await fetch(`/api/getArticle?n=${page}`);
+    let resJson = await response.json();
+    if (response.status === 404) {
+        throw new ReferenceError(`Page ${page} not found on Wikipedia.`)
+    }
+    else if (response.status !== 200) {
+        throw new Error(`An unknown error occured. JSON: ${JSON.stringify(resJson)}`);
+    }
+    return resJson;
+}

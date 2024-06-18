@@ -1,13 +1,22 @@
+$not-allowed: #d73333;
+$border-color-default: #a2a9b1;
+
 main.wikipedia {
-    margin: 1em;
-    border: 1px solid lightgray;
+    margin-top: 1em;
+    border: 1px solid $border-color-default;
     border-radius: 1em;
     padding: 1em;
     line-height: 1.1em;
+    :global(a) {
+        text-decoration: none; // get rid of underlines on links
+        &:hover {
+            text-decoration: underline;
+        }
+    }
     // The infobox
     :global(.infobox) {
         float: right;
-        border: 1px solid lightgray;
+        border: 1px solid $border-color-default;
         padding: 1em;
         margin-left: 1em;
         border-radius: 1em;
@@ -24,18 +33,19 @@ main.wikipedia {
     }
     // Normal image boxes
     :global(.mw-halign-left) {
-        float: left;
-        clear: left;
+        float: left!important;
+        clear: left!important;
+        margin: 0.5em 1.4em 1.3em 0!important;
     }
     :global(figure[typeof~='mw:File/Thumb']) {
         display: table;
         text-align: center;
-        border: 1px solid lightgray;
+        border: 1px solid $border-color-default;
         padding: .5em;
         float: right;
         clear: right;
         border-bottom: 0;
-        margin: 1em;
+        // margin: 1em;
     }
     :global(figure[typeof~='mw:File/Thumb'] figcaption) {
         text-align: left;
@@ -43,21 +53,15 @@ main.wikipedia {
         display: table-caption;
         caption-side: bottom;
         word-break: break-word;
-        border: 1px solid lightgray;
+        border: 1px solid $border-color-default;
         padding: .5em;
         border-top: 0;
         padding-top: 0;
     }
-    // Image rows
-    :global(div.thumb) {
-        width: auto;
-        border: 1px solid lightgray;
-        padding: .5em;
-        margin: 1em;
-    }
     :global(.tright) {
         float: right;
         clear: right;
+        margin: 0.5em 0 1.3em 1.4em;
     }
     :global(.tmulti .trow) {
         display: flex;
@@ -69,9 +73,121 @@ main.wikipedia {
     }
     // Text
     :global(.mw-parser-output h2) {
-        border-bottom: 1px solid lightgray;
+        border-bottom: 1px solid $border-color-default;
         padding-bottom: .3em;
         display: block;
         overflow: hidden;
+    }
+    :global(.new) { // unknown links
+        color: $not-allowed;
+        pointer-events: none; // prevent clicking
+    }
+    :global(.external), :global(a[title^="File:"]) {
+        pointer-events: none;
+        color: $not-allowed;
+    }
+    :global(.mw-editsection) { // edit buttons
+        pointer-events: none;
+        display: none;
+    }
+    :global(.taxobox-edit-taxonomy) {
+        display: none;
+    }
+    :global(figure[typeof~='mw:File'].mw-halign-center),
+    :global(figure[typeof~='mw:File/Frameless'].mw-halign-center) {
+        margin: 0 auto;
+        display: table;
+        border-collapse: collapse;
+        clear: none;
+        float: none;
+    }
+    :global(.center) {
+        width: 100%;
+        text-align: center;
+    }
+    :global(.center *) {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    :global(div.thumb) {
+        width: auto;
+        background-color: transparent;
+        margin-bottom: 0.5em;
+    }
+    :global(.thumbinner) {
+        // border: var(--border-subtle, 1px solid #c8ccd1);
+        // background-color: var(--background-color-interactive-subtle, #f8f9fa);
+        border: 1px solid $border-color-default;
+        font-size: 94%;
+        padding: 3px;
+        text-align: center;
+        overflow: hidden;
+        min-width: 100px;
+        padding: .5em;
+    }
+    :global(.noresize) {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+    :global(ul.gallery.gallery.gallery) {
+        margin: 2px;
+        padding: 2px;
+        display: block;
+    }
+    :global(li.gallerybox) {
+        vertical-align: top;
+        display: inline-block;
+    }
+    :global(ul.mw-gallery-packed li.gallerybox div.thumb) {
+        border: transparent;
+        border: 0;
+    }
+    :global(dic.gallerytext) {
+        overflow: hidden;
+        font-size: 94%;
+        padding: 9px 4px 17px;
+        word-wrap: break-word;
+    }
+    :global(li.gallerybox div.thumb) {
+        margin: 2px;
+        text-align: center;
+    }
+    :global(.templatequote) {
+        overflow: hidden;
+        margin: 1em 0;
+        padding-right: 32px;
+        margin-left: .5em;
+        padding-left: .5em;
+        border-left: .2em solid $border-color-default;
+        border-radius: 2px;
+        color: gray;
+    }
+    :global(.poem p) {
+        margin: 0;
+    }
+    :global(p) {
+        margin: 0.5em 0 1em 0;
+    }
+    :global(.mw-content-ltr figure[typeof~='mw:File/Thumb']), 
+    :global(.mw-content-ltr figure[typeof~='mw:File/Frame']) {
+        margin: 0.5em 0 1.3em 1.4em;
+        clear: right;
+        float: right;
+        min-width: 100px;
+    }
+    // tables
+    :global(.wikitable > tr > th),
+    :global(.wikitable > tr > td),
+    :global(.wikitable > * > tr > th),
+    :global(.wikitable > * > tr > td) {
+        padding: 0.2em 0.4em;
+        border: 1px solid $border-color-default;
+    }
+    :global(.wikitable) {
+        // background-color: #f8f9fa;
+        // color: #202122;
+        margin: 1em 0;
+        // border: 1px solid #a2a9b1;
+        border-collapse: collapse;
     }
 }
